@@ -1305,7 +1305,7 @@ el.textContent = name  <span class="cm">-- written straight into the DOM</span><
           py.textContent = 'PYTHON · OFFLINE';
           py.classList.add('lang-err');
         }
-      }, 45000);
+      }, 120000);
       setTimeout(function () {
         var lua = document.getElementById('lua-status');
         var name = document.getElementById('lua-codename');
@@ -1389,6 +1389,7 @@ el.textContent = name  <span class="cm">-- written straight into the DOM</span><
     compute()
 
     badge = document.getElementById("py-status")
+    badge.classList.remove("lang-err")
     badge.textContent = "PYTHON ● LIVE"
     badge.classList.add("lang-on")
   </script>
