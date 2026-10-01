@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TuitionHub — Smart Tuition Management App for Teachers</title>
+  <meta name="description" content="TuitionHub is a beautiful Flutter app for tuition teachers. Register teachers, sync data directly to the cloud database, and manage students, attendance & payments — all in one place." />
+  <meta property="og:title" content="TuitionHub — Smart Tuition Management App" />
+  <meta property="og:description" content="Register, sync & manage your tuition business smartly. Download the APK free." />
+  <meta property="og:type" content="website" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            base: '#05060f',
+            panel: '#0a0c1c',
+          },
+          fontFamily: {
+            display: ['"Space Grotesk"', 'Inter', 'sans-serif'],
+            body: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- AOS (Animate On Scroll) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
+
+  <style>
+    :root { --inx: #6366f1; --cyx: #22d3ee; --vix: #8b5cf6; }
+    html { scroll-behavior: smooth; scroll-padding-top: 92px; }
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .font-display { font-family: 'Space Grotesk', 'Inter', sans-serif; }
+
+    ::selection { background: rgba(99, 102, 241, .45); color: #fff; }
+    ::-webkit-scrollbar { width: 9px; }
+    ::-webkit-scrollbar-track { background: #07091a; }
+    ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #4f46e5, #0891b2); border-radius: 99px; }
+
+    /* ---------- Text gradients & glass ---------- */
+    .text-gradient {
+      background: linear-gradient(92deg, #818cf8 0%, #22d3ee 45%, #a78bfa 90%);
+      background-size: 200% auto;
+      -webkit-background-clip: text; background-clip: text;
+      color: transparent;
+      animation: gradient-x 6s linear infinite;
+    }
+    .glass {
+      background: rgba(255, 255, 255, .04);
+      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 255, 255, .08);
+    }
+    /* gradient border card */
+    .g-border {
+      position: relative;
+      background:
+        linear-gradient(#0b0e20ee, #0b0e20ee) padding-box,
+        linear-gradient(135deg, rgba(99,102,241,.55), rgba(34,211,238,.14) 45%, rgba(139,92,246,.55)) border-box;
+      border: 1px solid transparent;
+    }
+    .card-glow { transition: box-shadow .45s ease, border-color .45s ease; }
+    .card-glow:hover { box-shadow: 0 24px 70px -18px rgba(99, 102, 241, .38); }
+
+    /* ---------- Buttons ---------- */
+    .btn-primary {
+      background: linear-gradient(92deg, #4f46e5, #7c3aed 45%, #0891b2 100%);
+      background-size: 200% auto;
+      transition: all .5s ease;
+      box-shadow: 0 0 32px -6px rgba(99, 102, 241, .65);
+    }
+    .btn-primary:hover {
+      background-position: right center;
+      transform: translateY(-2px);
+      box-shadow: 0 0 50px -6px rgba(99, 102, 241, .85);
+    }
+    .btn-shine { position: relative; overflow: hidden; }
+    .btn-shine::after {
+      content: ''; position: absolute; top: 0; left: -80%;
+      width: 45%; height: 100%;
+      background: linear-gradient(100deg, transparent, rgba(255,255,255,.35), transparent);
+      transform: skewX(-22deg); transition: left .65s ease;
+    }
+    .btn-shine:hover::after { left: 135%; }
+
+    /* ---------- Backgrounds ---------- */
+    .bg-grid {
+      background-image:
+        linear-gradient(rgba(148,163,184,.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148,163,184,.06) 1px, transparent 1px);
+      background-size: 46px 46px;
+      -webkit-mask-image: radial-gradient(ellipse 85% 65% at 50% 38%, black 35%, transparent 72%);
+      mask-image: radial-gradient(ellipse 85% 65% at 50% 38%, black 35%, transparent 72%);
+    }
+    #spotlight {
+      position: fixed; inset: 0; z-index: -10; pointer-events: none;
+      background: radial-gradient(600px circle at var(--x, -300px) var(--y, -300px), rgba(99,102,241,.07), transparent 62%);
+    }
+    #progress {
+      position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+      background: linear-gradient(90deg, #6366f1, #22d3ee, #8b5cf6);
+      box-shadow: 0 0 12px rgba(99,102,241,.8);
+      z-index: 60; transition: width .1s linear;
+    }
+    .nav-base { border-bottom: 1px solid transparent; transition: all .4s ease; }
+    .nav-scrolled {
+      background: rgba(5, 6, 15, .78);
+      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+      border-bottom-color: rgba(255, 255, 255, .07);
+    }
+
+    /* ---------- CSS Phone mockups ---------- */
+    .phone-shell {
+      border-radius: 2.8rem; padding: .6rem;
+      background: linear-gradient(160deg, #262d5a, #0b0e20 55%);
+      border: 1px solid rgba(255,255,255,.13);
+      box-shadow: 0 45px 90px -22px rgba(0,0,0,.75), 0 0 70px -18px rgba(99,102,241,.5), inset 0 1px 0 rgba(255,255,255,.16);
+    }
+    .phone-screen { border-radius: 2.25rem; overflow: hidden; background: #0a0d20; position: relative; }
+
+    /* ---------- Animations ---------- */
+    @keyframes gradient-x { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
+    @keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-16px); } }
+    @keyframes blob-a { 0%,100% { transform: translate(0,0) scale(1); } 33% { transform: translate(50px,-40px) scale(1.12); } 66% { transform: translate(-30px,30px) scale(.94); } }
+    @keyframes blob-b { 0%,100% { transform: translate(0,0) scale(1); } 33% { transform: translate(-60px,50px) scale(1.08); } 66% { transform: translate(40px,-30px) scale(.92); } }
+    @keyframes scroll-dot { 0% { opacity: 0; transform: translateY(0); } 35% { opacity: 1; } 100% { opacity: 0; transform: translateY(14px); } }
+    .animate-floaty { animation: floaty 6s ease-in-out infinite; }
+    .animate-floaty-slow { animation: floaty 9s ease-in-out infinite; }
+    .blob-a { animation: blob-a 16s ease-in-out infinite; }
+    .blob-b { animation: blob-b 20s ease-in-out infinite; }
+    .scroll-dot { animation: scroll-dot 1.8s ease-in-out infinite; }
+
+    /* hero 3D fallback */
+    .webgl-fallback .fallback-orb { display: block; }
+
+    /* ---------- Polyglot engine section ---------- */
+    .lang-badge {
+      color: #94a3b8; border-color: rgba(148, 163, 184, .3); background: rgba(148, 163, 184, .08);
+    }
+    .lang-on {
+      color: #34d399; border-color: rgba(52, 211, 153, .4); background: rgba(52, 211, 153, .08);
+      animation: pulse-glow 2.5s ease-in-out infinite;
+    }
+    .lang-err { color: #f87171; border-color: rgba(248, 113, 113, .4); background: rgba(248, 113, 113, .08); }
+    .sync-chip {
+      display: inline-block; font-family: ui-monospace, Consolas, monospace;
+      font-size: 12px; font-weight: 600; color: #67e8f9; letter-spacing: .05em;
+      background: rgba(34, 211, 238, .08); border: 1px solid rgba(34, 211, 238, .25);
+      padding: .35rem .7rem; border-radius: .6rem; margin: .25rem .25rem 0 0;
+    }
+    .code-block {
+      background: #070917; border: 1px solid rgba(255, 255, 255, .07); border-radius: 1rem;
+      padding: 1rem 1.25rem; overflow-x: auto; white-space: pre;
+      font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+      font-size: 12px; line-height: 1.75; color: #b6c2e8;
+    }
+    .code-block .cm { color: #5b6478; }
+    .code-block .kw { color: #c4b5fd; font-weight: 600; }
+    .code-block .st { color: #86efac; }
+    .code-block .nu { color: #67e8f9; }
+    details.src summary {
+      cursor: pointer; list-style: none; user-select: none;
+      color: #818cf8; font-size: 11px; font-weight: 700; letter-spacing: .12em;
+      transition: color .3s ease;
+    }
+    details.src summary::-webkit-details-marker { display: none; }
+    details.src summary::before { content: '▸ '; }
+    details.src[open] summary::before { content: '▾ '; }
+    details.src summary:hover { color: #a5b4fc; }
+    details.src .code-block { margin-top: .85rem; }
+    input[type='range'] { accent-color: #6366f1; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      html { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+
+<body class="bg-base text-slate-300 font-body antialiased overflow-x-hidden">
+
+  <!-- Scroll progress + mouse spotlight -->
+  <div id="progress"></div>
+  <div id="spotlight"></div>
+
+  <!-- Ambient aurora background -->
+  <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+    <div class="blob-a absolute -top-44 -left-44 w-[620px] h-[620px] bg-indigo-600/20 rounded-full blur-[140px]"></div>
+    <div class="blob-b absolute top-1/3 -right-52 w-[540px] h-[540px] bg-cyan-500/15 rounded-full blur-[140px]"></div>
+    <div class="blob-a absolute bottom-[-160px] left-1/4 w-[560px] h-[560px] bg-violet-600/15 rounded-full blur-[150px]"></div>
+  </div>
+
+  <!-- ================= NAVBAR ================= -->
+  <header id="navbar" class="nav-base fixed top-0 inset-x-0 z-50">
+    <nav class="max-w-7xl mx-auto px-5 sm:px-8 h-[72px] flex items-center justify-between">
+      <a href="#top" class="flex items-center gap-3 group">
+        <span class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 via-violet-500 to-cyan-400 p-[1px]">
+          <span class="w-full h-full rounded-[10px] bg-base flex items-center justify-center">
+            <svg class="w-5 h-5 text-indigo-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/></svg>
+          </span>
+        </span>
+        <span class="font-display font-700 font-bold text-white text-lg tracking-tight">Tuition<span class="text-gradient">Hub</span></span>
+      </a>
+
+      <div class="hidden md:flex items-center gap-8 text-sm font-medium">
+        <a href="#features" class="hover:text-white transition-colors">Features</a>
+        <a href="#showcase" class="hover:text-white transition-colors">App Preview</a>
+        <a href="#how" class="hover:text-white transition-colors">How it Works</a>
+        <a href="#polyglot" class="hover:text-white transition-colors">Live Demo</a>
+        <a href="#download" class="px-5 py-2.5 rounded-xl btn-primary btn-shine text-white font-semibold">Download APK</a>
+      </div>
+
+      <button data-menu-toggle aria-label="Open menu" class="md:hidden w-10 h-10 rounded-lg glass flex items-center justify-center text-slate-200">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+      </button>
+    </nav>
+
+    <!-- Mobile menu -->
+    <div id="mobileMenu" class="hidden md:hidden flex flex-col glass mx-4 mt-1 rounded-2xl p-5 gap-4 text-sm font-medium">
+      <a href="#features" class="block py-2 hover:text-white transition-colors">Features</a>
+      <a href="#showcase" class="block py-2 hover:text-white transition-colors">App Preview</a>
+      <a href="#how" class="block py-2 hover:text-white transition-colors">How it Works</a>
+      <a href="#polyglot" class="block py-2 hover:text-white transition-colors">Live Demo</a>
+      <a href="#download" class="mt-2 text-center px-5 py-3 rounded-xl btn-primary text-white font-semibold">Download APK</a>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- ================= HERO ================= -->
+    <section class="relative min-h-screen flex items-center pt-32 pb-20 overflow-hidden">
+      <div class="bg-grid absolute inset-0"></div>
+
+      <div class="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 grid lg:grid-cols-2 gap-14 lg:gap-6 items-center w-full">
+        <!-- Copy -->
+        <div class="text-center lg:text-left" data-aos="fade-right">
+          <div class="inline-flex items-center gap-2 glass rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide text-indigo-300">
+            <span class="relative flex h-2 w-2">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-60"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-400"></span>
+            </span>
+            NEW · v1.0.0 JUST RELEASED
+          </div>
+
+          <h1 class="font-display mt-6 text-4xl sm:text-5xl xl:text-[3.9rem] font-bold leading-[1.08] tracking-tight text-white">
+            Smart <span class="text-gradient">Tuition Management</span> App for Teachers
+          </h1>
+
+          <p class="mt-6 text-base sm:text-lg text-slate-400 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+            Register teachers, sync data directly to your cloud database, and manage every
+            student, class &amp; payment — all from one beautiful Flutter app built for speed.
+          </p>
+
+          <div class="mt-9 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+            <a href="appapk/app-release.apk" download="TuitionHub-v1.0.0.apk"
+               class="btn-primary btn-shine group inline-flex items-center gap-3 px-8 py-4 rounded-2xl font-semibold text-white">
+              <svg class="w-5 h-5 group-hover:translate-y-0.5 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download APK — Free
+            </a>
+            <a href="#features"
+               class="glass hover:bg-white/10 transition-all duration-300 inline-flex items-center gap-2 px-7 py-4 rounded-2xl font-semibold text-slate-200 hover:-translate-y-0.5">
+              Explore Features
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+            </a>
+          </div>
+
+          <div class="mt-7 flex flex-wrap items-center justify-center lg:justify-start gap-x-5 gap-y-2 text-xs text-slate-500">
+            <span class="flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>100% Free</span>
+            <span class="flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Android 6.0+</span>
+            <span class="flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>No Ads</span>
+          </div>
+        </div>
+
+        <!-- 3D canvas -->
+        <div id="hero-3d" class="relative h-[440px] sm:h-[520px] lg:h-[640px] w-full" data-aos="fade-left" data-aos-delay="150">
+          <div class="fallback-orb hidden absolute inset-0 items-center justify-center">
+            <div class="w-64 h-64 rounded-full bg-gradient-to-tr from-indigo-600/60 via-violet-600/40 to-cyan-400/50 blur-2xl animate-pulse"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- scroll indicator -->
+      <a href="#stats" class="absolute bottom-7 left-1/2 -translate-x-1/2 hidden sm:flex flex-col items-center gap-2 text-slate-600 hover:text-slate-300 transition-colors" aria-label="Scroll down">
+        <span class="text-[10px] tracking-[0.25em] font-semibold">SCROLL</span>
+        <span class="w-6 h-10 rounded-full border-2 border-current flex justify-center pt-2">
+          <span class="scroll-dot w-1 h-2 rounded-full bg-current"></span>
+        </span>
+      </a>
+    </section>
+
+    <!-- ================= STATS ================= -->
+    <section id="stats" class="relative py-14">
+      <div class="max-w-6xl mx-auto px-5 sm:px-8">
+        <div class="glass rounded-3xl grid grid-cols-2 lg:grid-cols-4 overflow-hidden" data-aos="fade-up">
+          <div class="p-8 text-center border-b lg:border-b-0 lg:border-r border-white/5">
+            <div class="font-display text-3xl sm:text-4xl font-bold text-white" data-count="500" data-suffix="+">0</div>
+            <div class="mt-1 text-xs sm:text-sm text-slate-500 tracking-wide">Teachers Registered</div>
+          </div>
+          <div class="p-8 text-center border-b lg:border-b-0 lg:border-r border-white/5">
+            <div class="font-display text-3xl sm:text-4xl font-bold text-white" data-count="12000" data-suffix="+">0</div>
+            <div class="mt-1 text-xs sm:text-sm text-slate-500 tracking-wide">Students Managed</div>
+          </div>
+          <div class="p-8 text-center border-r border-white/5">
+            <div class="font-display text-3xl sm:text-4xl font-bold text-white" data-count="99.9" data-decimals="1" data-suffix="%">0</div>
+            <div class="mt-1 text-xs sm:text-sm text-slate-500 tracking-wide">Sync Success Rate</div>
+          </div>
+          <div class="p-8 text-center">
+            <div class="font-display text-3xl sm:text-4xl font-bold text-white" data-count="4.9" data-decimals="1" data-suffix="★">0</div>
+            <div class="mt-1 text-xs sm:text-sm text-slate-500 tracking-wide">Average Rating</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= FEATURES ================= -->
+    <section id="features" class="relative py-24 sm:py-32">
+      <div class="max-w-7xl mx-auto px-5 sm:px-8">
+        <div class="text-center max-w-2xl mx-auto" data-aos="fade-up">
+          <span class="text-xs font-bold tracking-[0.3em] text-cyan-400">FEATURES</span>
+          <h2 class="font-display mt-4 text-3xl sm:text-4xl xl:text-5xl font-bold text-white tracking-tight">
+            Everything you need to <span class="text-gradient">run your tuition</span>
+          </h2>
+          <p class="mt-5 text-slate-400 leading-relaxed">
+            Powerful tools wrapped in a clean, simple interface — so you spend time teaching, not doing paperwork.
+          </p>
+        </div>
+
+        <div class="mt-16 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- 1 -->
+          <div data-tilt data-aos="fade-up" class="g-border card-glow rounded-2xl p-7 will-change-transform">
+            <div class="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-400/20 flex items-center justify-center text-indigo-400">
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+            </div>
+            <h3 class="font-display mt-5 text-lg font-semibold text-white">Teacher Registration</h3>
+            <p class="mt-2 text-sm leading-relaxed text-slate-400">Secure onboarding for teachers with verified profiles, subjects &amp; batches — set up your account in minutes.</p>
+          </div>
+          <!-- 2 -->
+          <div data-tilt data-aos="fade-up" data-aos-delay="80" class="g-border card-glow rounded-2xl p-7 will-change-transform">
+            <div class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-400/20 flex items-center justify-center text-cyan-400">
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+            </div>
+            <h3 class="font-display mt-5 text-lg font-semibold text-white">Direct Database Sync</h3>
+            <p class="mt-2 text-sm leading-relaxed text-slate-400">Every entry syncs instantly to your cloud database. No cables, no manual exports, no lost data — ever.</p>
+          </div>
+          <!-- 3 -->
+          <div data-tilt data-aos="fade-up" data-aos-delay="160" class="g-border card-glow rounded-2xl p-7 will-change-transform">
+            <div class="w-12 h-12 rounded-xl bg-violet-500/10 border border-violet-400/20 flex items-center justify-center text-violet-400">
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>
+            </div>
+            <h3 class="font-display mt-5 text-lg font-semibold text-white">Easy Management</h3>
+            <p class="mt-2 text-sm leading-relaxed text-slate-400">Organize students, batches, schedules &amp; records with an interface designed for one-hand speed.</p>
+          </div>
+          <!-- 4 -->
+          <div data-tilt data-aos="fade-up" class="g-border card-glow rounded-2xl p-7 will-change-transform">
+            <div class="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-400/20 flex items-center justify-center text-indigo-400">
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="m9 16 2 2 4-4"/></svg>
+            </div>
+            <h3 class="font-display mt-5 text-lg font-semibold text-white">Attendance Tracking</h3>
+            <p class="mt-2 text-sm leading-relaxed text-slate-400">One-tap daily attendance with automatic monthly reports for every batch you teach.</p>
+          </div>
+          <!-- 5 -->
+          <div data-tilt data-aos="fade-up" data-aos-delay="80" class="g-border card-glow rounded-2xl p-7 will-change-transform">
+            <div class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-400/20 flex items-center justify-center text-cyan-400">
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+            </div>
+            <h3 class="font-display mt-5 text-lg font-semibold text-white">Payment Records</h3>
+            <p class="mt-2 text-sm leading-relaxed text-slate-400">Track who paid, who's pending and generate due lists instantly — money matters, sorted.</p>
+          </div>
+          <!-- 6 -->
+          <div data-tilt data-aos="fade-up" data-aos-delay="160" class="g-border card-glow rounded-2xl p-7 will-change-transform">
+            <div class="w-12 h-12 rounded-xl bg-violet-500/10 border border-violet-400/20 flex items-center justify-center text-violet-400">
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
+            </div>
+            <h3 class="font-display mt-5 text-lg font-semibold text-white">Smart Analytics</h3>
+            <p class="mt-2 text-sm leading-relaxed text-slate-400">Clean dashboards &amp; charts that turn raw numbers into insights you can actually act on.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= APP SHOWCASE ================= -->
+    <section id="showcase" class="relative py-24 sm:py-32 overflow-hidden">
+      <div class="max-w-7xl mx-auto px-5 sm:px-8 grid lg:grid-cols-2 gap-16 items-center">
+        <!-- Copy -->
+        <div class="order-2 lg:order-1" data-aos="fade-right">
+          <span class="text-xs font-bold tracking-[0.3em] text-cyan-400">APP PREVIEW</span>
+          <h2 class="font-display mt-4 text-3xl sm:text-4xl xl:text-5xl font-bold text-white tracking-tight">
+            A dashboard your <span class="text-gradient">fingertips will love</span>
+          </h2>
+          <p class="mt-5 text-slate-400 leading-relaxed max-w-lg">
+            Built with Flutter's silky-smooth rendering, TuitionHub gives you a real-time
+            overview of your entire tuition business — students, classes, cash-flow — at a glance.
+          </p>
+
+          <ul class="mt-8 space-y-4">
+            <li class="flex gap-3 items-start">
+              <span class="mt-0.5 w-6 h-6 shrink-0 rounded-lg bg-indigo-500/15 border border-indigo-400/25 flex items-center justify-center text-indigo-300"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <span><strong class="text-white font-semibold">Live dashboard</strong> — students, attendance &amp; income in one screen.</span>
+            </li>
+            <li class="flex gap-3 items-start">
+              <span class="mt-0.5 w-6 h-6 shrink-0 rounded-lg bg-cyan-500/15 border border-cyan-400/25 flex items-center justify-center text-cyan-300"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <span><strong class="text-white font-semibold">Offline-first</strong> — works without internet, syncs when you're back online.</span>
+            </li>
+            <li class="flex gap-3 items-start">
+              <span class="mt-0.5 w-6 h-6 shrink-0 rounded-lg bg-violet-500/15 border border-violet-400/25 flex items-center justify-center text-violet-300"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <span><strong class="text-white font-semibold">Bangla &amp; English</strong> — full bilingual support for local teachers.</span>
+            </li>
+          </ul>
+
+          <a href="#download" class="mt-9 inline-flex items-center gap-2 text-sm font-semibold text-indigo-300 hover:text-white transition-colors group">
+            Get the app
+            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </div>
+
+        <!-- Phones -->
+        <div class="order-1 lg:order-2 relative flex justify-center" data-aos="zoom-in" data-aos-delay="100">
+          <div class="absolute inset-0 -z-10 flex items-center justify-center">
+            <div class="w-[420px] h-[420px] bg-gradient-to-tr from-indigo-600/25 via-violet-600/20 to-cyan-500/25 blur-3xl rounded-full"></div>
+          </div>
+
+          <!-- back phone -->
+          <div class="hidden sm:block absolute left-[2%] top-14 z-0 opacity-70 rotate-[-13deg] phone-shell w-[210px] animate-floaty-slow">
+            <div class="phone-screen aspect-[9/18]">
+              <div class="h-full bg-[#0a0d20] p-4 pt-10 flex flex-col gap-3">
+                <div class="h-8 w-8 rounded-full bg-gradient-to-br from-indigo-500 to-cyan-400"></div>
+                <div class="h-20 rounded-2xl bg-white/5 border border-white/10"></div>
+                <div class="grid grid-cols-2 gap-3">
+                  <div class="h-16 rounded-2xl bg-indigo-500/10 border border-indigo-400/15"></div>
+                  <div class="h-16 rounded-2xl bg-cyan-500/10 border border-cyan-400/15"></div>
+                </div>
+                <div class="h-24 rounded-2xl bg-white/5 border border-white/10"></div>
+                <div class="mt-auto h-10 rounded-2xl bg-white/5 border border-white/10"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- front phone -->
+          <div class="relative z-10 phone-shell w-[270px] sm:w-[300px] animate-floaty">
+            <div class="phone-screen aspect-[9/19]">
+              <!-- notch -->
+              <div class="absolute top-2.5 left-1/2 -translate-x-1/2 w-24 h-[22px] rounded-full bg-black z-20"></div>
+              <!-- app UI -->
+              <div class="h-full bg-[#0a0d20] px-4 pt-12 pb-4 flex flex-col gap-3.5 relative overflow-hidden">
+                <div class="absolute -top-16 -right-16 w-48 h-48 bg-indigo-600/25 rounded-full blur-3xl"></div>
+                <div class="absolute -bottom-16 -left-16 w-48 h-48 bg-cyan-500/20 rounded-full blur-3xl"></div>
+
+                <!-- header -->
+                <div class="flex items-center justify-between relative z-10">
+                  <div>
+                    <p class="text-[10px] text-slate-400">Good Morning,</p>
+                    <p class="text-sm font-bold text-white font-display">Rahim Uddin</p>
+                  </div>
+                  <div class="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-cyan-400 flex items-center justify-center text-[11px] font-bold text-white">RU</div>
+                </div>
+
+                <!-- students card -->
+                <div class="relative z-10 rounded-2xl bg-white/[.05] border border-white/10 p-4">
+                  <p class="text-[9px] tracking-widest text-slate-400 font-semibold">TOTAL STUDENTS</p>
+                  <div class="flex items-end justify-between mt-1">
+                    <span class="font-display text-3xl font-bold text-white">128</span>
+                    <span class="text-[9px] font-bold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2 py-1 rounded-full">+12 new</span>
+                  </div>
+                  <div class="mt-3 flex items-end gap-1.5 h-12">
+                    <div class="flex-1 rounded-t bg-indigo-400/70" style="height:45%"></div>
+                    <div class="flex-1 rounded-t bg-indigo-400/70" style="height:65%"></div>
+                    <div class="flex-1 rounded-t bg-indigo-400/70" style="height:52%"></div>
+                    <div class="flex-1 rounded-t bg-indigo-400/70" style="height:80%"></div>
+                    <div class="flex-1 rounded-t bg-indigo-400/70" style="height:60%"></div>
+                    <div class="flex-1 rounded-t bg-cyan-400" style="height:100%"></div>
+                    <div class="flex-1 rounded-t bg-indigo-400/70" style="height:72%"></div>
+                  </div>
+                </div>
+
+                <!-- mini stats -->
+                <div class="relative z-10 grid grid-cols-2 gap-3">
+                  <div class="rounded-2xl bg-indigo-500/10 border border-indigo-400/15 p-3">
+                    <p class="text-[9px] text-slate-400 font-semibold">ATTENDANCE</p>
+                    <p class="font-display text-lg font-bold text-white mt-0.5">94%</p>
+                  </div>
+                  <div class="rounded-2xl bg-cyan-500/10 border border-cyan-400/15 p-3">
+                    <p class="text-[9px] text-slate-400 font-semibold">INCOME</p>
+                    <p class="font-display text-lg font-bold text-white mt-0.5">৳45,000</p>
+                  </div>
+                </div>
+
+                <!-- classes -->
+                <div class="relative z-10 flex-1 min-h-0 flex flex-col">
+                  <div class="flex items-center justify-between mb-2">
+                    <p class="text-xs font-bold text-white">Today's Classes</p>
+                    <p class="text-[9px] font-semibold text-indigo-300">See all</p>
+                  </div>
+                  <div class="space-y-2">
+                    <div class="flex items-center gap-2.5 rounded-xl bg-white/[.04] border border-white/5 px-3 py-2">
+                      <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
+                      <div class="flex-1"><p class="text-[10px] font-semibold text-slate-100">Class 9 · Physics</p><p class="text-[9px] text-slate-500">5:00 PM</p></div>
+                      <span class="text-[8px] font-bold text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded-full border border-emerald-400/20">Done</span>
+                    </div>
+                    <div class="flex items-center gap-2.5 rounded-xl bg-white/[.04] border border-white/5 px-3 py-2">
+                      <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+                      <div class="flex-1"><p class="text-[10px] font-semibold text-slate-100">Class 7 · Math</p><p class="text-[9px] text-slate-500">6:30 PM</p></div>
+                      <span class="text-[8px] font-bold text-violet-300 bg-violet-400/10 px-2 py-0.5 rounded-full border border-violet-400/20">Soon</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- bottom nav -->
+                <div class="relative z-10 rounded-2xl bg-[#070917]/90 border border-white/5 px-5 py-2.5 flex items-center justify-between">
+                  <div class="w-8 h-8 rounded-lg bg-indigo-500/25 border border-indigo-400/30 flex items-center justify-center">
+                    <svg class="w-4 h-4 text-indigo-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                  </div>
+                  <svg class="w-4 h-4 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  <svg class="w-4 h-4 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  <svg class="w-4 h-4 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- floating chips -->
+          <div class="absolute -right-2 sm:right-2 top-16 z-20 glass rounded-2xl px-4 py-3 flex items-center gap-2.5 animate-floaty shadow-lg shadow-indigo-900/40">
+            <span class="w-8 h-8 rounded-lg bg-emerald-400/15 border border-emerald-400/25 flex items-center justify-center text-emerald-400">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
+            <div><p class="text-xs font-bold text-white">Synced to Cloud</p><p class="text-[10px] text-slate-500">just now</p></div>
+          </div>
+          <div class="absolute -left-2 sm:left-0 bottom-20 z-20 glass rounded-2xl px-4 py-3 flex items-center gap-2.5 animate-floaty-slow shadow-lg shadow-cyan-900/40">
+            <span class="w-8 h-8 rounded-lg bg-cyan-400/15 border border-cyan-400/25 flex items-center justify-center text-cyan-300">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </span>
+            <div><p class="text-xs font-bold text-white">Attendance done</p><p class="text-[10px] text-slate-500">Class 9 · 32 present</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= HOW IT WORKS ================= -->
+    <section id="how" class="relative py-24 sm:py-28">
+      <div class="max-w-6xl mx-auto px-5 sm:px-8">
+        <div class="text-center max-w-2xl mx-auto" data-aos="fade-up">
+          <span class="text-xs font-bold tracking-[0.3em] text-cyan-400">GETTING STARTED</span>
+          <h2 class="font-display mt-4 text-3xl sm:text-4xl font-bold text-white tracking-tight">
+            Up &amp; running in <span class="text-gradient">3 simple steps</span>
+          </h2>
+        </div>
+
+        <div class="mt-14 relative grid md:grid-cols-3 gap-6">
+          <div class="hidden md:block absolute top-16 left-[18%] right-[18%] border-t border-dashed border-white/10"></div>
+
+          <div class="relative g-border rounded-2xl p-8 text-center card-glow" data-aos="fade-up">
+            <div class="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center font-display text-xl font-bold text-white shadow-lg shadow-indigo-900/50">1</div>
+            <h3 class="font-display mt-5 text-lg font-semibold text-white">Download &amp; Install</h3>
+            <p class="mt-2 text-sm text-slate-400 leading-relaxed">Grab the APK below and install it on any Android 6.0+ device — takes less than a minute.</p>
+          </div>
+          <div class="relative g-border rounded-2xl p-8 text-center card-glow" data-aos="fade-up" data-aos-delay="100">
+            <div class="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-violet-700 flex items-center justify-center font-display text-xl font-bold text-white shadow-lg shadow-violet-900/50">2</div>
+            <h3 class="font-display mt-5 text-lg font-semibold text-white">Register Your Profile</h3>
+            <p class="mt-2 text-sm text-slate-400 leading-relaxed">Create your teacher account, add your subjects and set up your tuition batches.</p>
+          </div>
+          <div class="relative g-border rounded-2xl p-8 text-center card-glow" data-aos="fade-up" data-aos-delay="200">
+            <div class="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500 to-cyan-700 flex items-center justify-center font-display text-xl font-bold text-white shadow-lg shadow-cyan-900/50">3</div>
+            <h3 class="font-display mt-5 text-lg font-semibold text-white">Start Managing</h3>
+            <p class="mt-2 text-sm text-slate-400 leading-relaxed">Add students, take attendance, record payments — everything syncs to the cloud automatically.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= POLYGLOT ENGINE ================= -->
+    <section id="polyglot" class="relative py-24 sm:py-32">
+      <div class="max-w-7xl mx-auto px-5 sm:px-8">
+        <div class="text-center max-w-2xl mx-auto" data-aos="fade-up">
+          <span class="text-xs font-bold tracking-[0.3em] text-cyan-400">POLYGLOT ENGINE</span>
+          <h2 class="font-display mt-4 text-3xl sm:text-4xl xl:text-5xl font-bold text-white tracking-tight">
+            One page, <span class="text-gradient">four languages</span> — running live
+          </h2>
+          <p class="mt-5 text-slate-400 leading-relaxed">
+            This page runs real <strong class="text-slate-200">Python</strong>, a hand-compiled
+            <strong class="text-slate-200">WebAssembly</strong> module and <strong class="text-slate-200">Lua</strong> —
+            right inside your browser. No server, no tricks: every number below is computed on your device,
+            in a language almost no other website dares to ship.
+          </p>
+          <div class="mt-6 flex flex-wrap justify-center gap-2 text-[10px] font-bold tracking-[0.15em] text-slate-400">
+            <span class="glass px-3 py-1.5 rounded-full">HTML5</span>
+            <span class="glass px-3 py-1.5 rounded-full">CSS3</span>
+            <span class="glass px-3 py-1.5 rounded-full">JAVASCRIPT</span>
+            <span class="glass px-3 py-1.5 rounded-full text-indigo-300">PYTHON 3 · PYODIDE</span>
+            <span class="glass px-3 py-1.5 rounded-full text-cyan-300">WEBASSEMBLY</span>
+            <span class="glass px-3 py-1.5 rounded-full text-violet-300">LUA 5.4 · FENGARI</span>
+          </div>
+        </div>
+
+        <div class="mt-16 grid lg:grid-cols-3 gap-6">
+          <!-- ===== Python calculator ===== -->
+          <div class="lg:col-span-2 g-border card-glow rounded-2xl p-7" data-aos="fade-up">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex items-center gap-3">
+                <span class="w-11 h-11 rounded-xl bg-indigo-500/10 border border-indigo-400/20 flex items-center justify-center text-xl">🐍</span>
+                <div>
+                  <h3 class="font-display text-lg font-semibold text-white">Tuition Income Calculator</h3>
+                  <p class="text-xs text-slate-500">computed by CPython, in your browser</p>
+                </div>
+              </div>
+              <span id="py-status" class="lang-badge text-[10px] font-bold tracking-wider px-2.5 py-1 rounded-full border">PYTHON · LOADING…</span>
+            </div>
+
+            <div class="mt-7 grid sm:grid-cols-2 gap-x-8 gap-y-5">
+              <div>
+                <div class="flex justify-between text-xs mb-2"><span class="text-slate-400 font-medium">Students</span><span id="py-v-students" class="text-indigo-300 font-bold">40</span></div>
+                <input id="py-students" type="range" min="5" max="300" step="5" value="40" class="w-full" />
+              </div>
+              <div>
+                <div class="flex justify-between text-xs mb-2"><span class="text-slate-400 font-medium">Monthly fee</span><span id="py-v-fee" class="text-indigo-300 font-bold">৳800</span></div>
+                <input id="py-fee" type="range" min="200" max="5000" step="50" value="800" class="w-full" />
+              </div>
+              <div>
+                <div class="flex justify-between text-xs mb-2"><span class="text-slate-400 font-medium">Batches</span><span id="py-v-batches" class="text-indigo-300 font-bold">4</span></div>
+                <input id="py-batches" type="range" min="1" max="12" step="1" value="4" class="w-full" />
+              </div>
+              <div>
+                <div class="flex justify-between text-xs mb-2"><span class="text-slate-400 font-medium">Period</span><span id="py-v-months" class="text-indigo-300 font-bold">12 mo</span></div>
+                <input id="py-months" type="range" min="1" max="24" step="1" value="12" class="w-full" />
+              </div>
+            </div>
+
+            <div class="mt-7 grid grid-cols-3 gap-3">
+              <div class="rounded-xl bg-white/[.04] border border-white/10 p-4 text-center">
+                <p class="text-[10px] tracking-widest text-slate-500 font-semibold">MONTHLY</p>
+                <p id="py-monthly" class="font-display text-lg sm:text-xl font-bold text-gradient mt-1">৳32,000</p>
+              </div>
+              <div class="rounded-xl bg-white/[.04] border border-white/10 p-4 text-center">
+                <p class="text-[10px] tracking-widest text-slate-500 font-semibold">PERIOD TOTAL</p>
+                <p id="py-yearly" class="font-display text-lg sm:text-xl font-bold text-white mt-1">৳384,000</p>
+              </div>
+              <div class="rounded-xl bg-white/[.04] border border-white/10 p-4 text-center">
+                <p class="text-[10px] tracking-widest text-slate-500 font-semibold">PER BATCH</p>
+                <p id="py-perbatch" class="font-display text-lg sm:text-xl font-bold text-white mt-1">৳8,000</p>
+              </div>
+            </div>
+
+            <div class="mt-5">
+              <div class="flex justify-between text-[10px] text-slate-500 mb-1.5"><span class="font-semibold tracking-wider">GOAL · ৳100,000 / MONTH</span><span>synced ✓</span></div>
+              <div class="h-2 rounded-full bg-white/5 border border-white/5 overflow-hidden">
+                <div id="py-bar" class="h-full w-0 rounded-full bg-gradient-to-r from-indigo-500 via-violet-500 to-cyan-400 transition-all duration-500"></div>
+              </div>
+            </div>
+
+            <details class="src mt-6">
+              <summary>VIEW THE PYTHON SOURCE RUNNING THIS</summary>
+              <div class="code-block"><span class="kw">def</span> <span class="nu">compute</span>(event=<span class="kw">None</span>):
+    students  = num(<span class="st">"py-students"</span>, <span class="nu">40</span>)
+    fee       = num(<span class="st">"py-fee"</span>, <span class="nu">800</span>)
+    monthly   = students * fee
+    total     = monthly * num(<span class="st">"py-months"</span>, <span class="nu">12</span>)
+    per_batch = monthly / max(num(<span class="st">"py-batches"</span>, <span class="nu">4</span>), <span class="nu">1</span>)
+    set(<span class="st">"py-monthly"</span>,  f<span class="st">"৳{monthly:,.0f}"</span>)
+    set(<span class="st">"py-yearly"</span>,   f<span class="st">"৳{total:,.0f}"</span>)
+    set(<span class="st">"py-perbatch"</span>, f<span class="st">"৳{per_batch:,.0f}"</span>)</div>
+            </details>
+          </div>
+
+          <!-- ===== WebAssembly forge ===== -->
+          <div class="g-border card-glow rounded-2xl p-7" data-aos="fade-up" data-aos-delay="80">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex items-center gap-3">
+                <span class="w-11 h-11 rounded-xl bg-cyan-500/10 border border-cyan-400/20 flex items-center justify-center">
+                  <svg class="w-5 h-5 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
+                </span>
+                <div>
+                  <h3 class="font-display text-lg font-semibold text-white">Sync-ID Forge</h3>
+                  <p class="text-xs text-slate-500">xorshift32 · hand-written WAT</p>
+                </div>
+              </div>
+              <span id="wasm-status" class="lang-badge text-[10px] font-bold tracking-wider px-2.5 py-1 rounded-full border">WASM · BOOT…</span>
+            </div>
+
+            <p class="mt-5 text-sm leading-relaxed text-slate-400">
+              A <span class="text-cyan-300 font-semibold">98-byte</span> WebAssembly module — written in WAT text,
+              compiled to raw bytes — generates cryptographically styled session IDs for every database sync.
+            </p>
+
+            <button id="wasm-btn" class="mt-5 w-full glass hover:bg-cyan-500/10 hover:border-cyan-400/30 transition-all rounded-xl px-4 py-3 text-sm font-semibold text-cyan-300 flex items-center justify-center gap-2">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              Generate Sync IDs
+            </button>
+            <div id="wasm-out" class="mt-4 min-h-[2.4rem]"></div>
+
+            <details class="src mt-6">
+              <summary>VIEW THE WEBASSEMBLY SOURCE (WAT)</summary>
+              <div class="code-block"><span class="cm">;; xorshift32 PRNG — compiled to a 98-byte .wasm</span>
+(<span class="kw">module</span>
+  (global $s (mut i32) (i32.const <span class="nu">2463534242</span>))
+  (<span class="kw">func</span> (export <span class="st">"seed"</span>) (param $v i32)
+    (global.set $s (local.get $v)))
+  (<span class="kw">func</span> (export <span class="st">"next"</span>) (result i32)
+    (global.set $s (i32.xor (global.get $s)
+      (i32.shl (global.get $s) (i32.const <span class="nu">13</span>))))
+    (global.set $s (i32.xor (global.get $s)
+      (i32.shr_u (global.get $s) (i32.const <span class="nu">17</span>))))
+    (global.set $s (i32.xor (global.get $s)
+      (i32.shl (global.get $s) (i32.const <span class="nu">5</span>))))
+    (global.get $s)))</div>
+            </details>
+          </div>
+
+          <!-- ===== Lua oracle ===== -->
+          <div class="g-border card-glow rounded-2xl p-7" data-aos="fade-up" data-aos-delay="160">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex items-center gap-3">
+                <span class="w-11 h-11 rounded-xl bg-violet-500/10 border border-violet-400/20 flex items-center justify-center">
+                  <svg class="w-5 h-5 text-violet-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                </span>
+                <div>
+                  <h3 class="font-display text-lg font-semibold text-white">Codename Oracle</h3>
+                  <p class="text-xs text-slate-500">Lua 5.4 · Fengari VM</p>
+                </div>
+              </div>
+              <span id="lua-status" class="lang-badge text-[10px] font-bold tracking-wider px-2.5 py-1 rounded-full border">LUA · LOADING…</span>
+            </div>
+
+            <p id="lua-codename" class="font-display mt-6 text-3xl font-bold text-gradient tracking-tight">···</p>
+            <p class="mt-3 text-sm leading-relaxed text-slate-400">
+              Today's release codename, derived deterministically from the date — written and executed in
+              <span class="text-violet-300 font-semibold">Lua</span>, the language of game engines and lightweight scripting.
+            </p>
+
+            <details class="src mt-6">
+              <summary>VIEW THE LUA SOURCE</summary>
+              <div class="code-block"><span class="kw">local</span> t = os.date(<span class="st">"*t"</span>)
+<span class="kw">local</span> n = t.yday + t.year
+<span class="kw">local</span> A = {<span class="st">"Nebula"</span>, <span class="st">"Quantum"</span>, <span class="st">"Azure"</span>, <span class="st">"Nova"</span>, …}
+<span class="kw">local</span> B = {<span class="st">"Fox"</span>, <span class="st">"Falcon"</span>, <span class="st">"Tiger"</span>, <span class="st">"Phoenix"</span>, …}
+<span class="kw">local</span> name = A[(n % #A) + <span class="nu">1</span>] .. <span class="st">" "</span> .. B[((n * <span class="nu">7</span>) % #B) + <span class="nu">1</span>]
+el.textContent = name  <span class="cm">-- written straight into the DOM</span></div>
+            </details>
+          </div>
+
+          <!-- ===== Why polyglot ===== -->
+          <div class="lg:col-span-2 g-border card-glow rounded-2xl p-7" data-aos="fade-up" data-aos-delay="120">
+            <h3 class="font-display text-lg font-semibold text-white">Why ship four languages?</h3>
+            <p class="mt-2 text-sm leading-relaxed text-slate-400">Because each tool does what it's best at — and this page proves it:</p>
+            <ul class="mt-4 space-y-3 text-sm">
+              <li class="flex gap-3"><span class="text-lg">🐍</span><span><strong class="text-white font-semibold">Python</strong> — the calculator above is real CPython 3.12, compiled to WebAssembly by Pyodide and running at native speed. Business logic stays in the language your backend speaks.</span></li>
+              <li class="flex gap-3"><span class="text-lg">⚙️</span><span><strong class="text-white font-semibold">WebAssembly</strong> — the Sync-ID forge is 98 bytes of hand-written WAT, compiled offline with WABT. Zero dependencies, near-native speed.</span></li>
+              <li class="flex gap-3"><span class="text-lg">🌙</span><span><strong class="text-white font-semibold">Lua</strong> — the codename oracle runs on Fengari, a full Lua 5.4 VM in JavaScript. The same trick that powers game modding, in a landing page.</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= DOWNLOAD ================= -->
+    <section id="download" class="relative py-24 sm:py-32">
+      <div class="max-w-3xl mx-auto px-5 sm:px-8" data-aos="zoom-in">
+        <div class="g-border rounded-[2rem] p-10 sm:p-14 text-center relative overflow-hidden card-glow">
+          <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-indigo-600/20 blur-[110px] rounded-full pointer-events-none"></div>
+          <div class="absolute -bottom-36 left-1/4 w-[380px] h-[260px] bg-cyan-500/15 blur-[110px] rounded-full pointer-events-none"></div>
+
+          <div class="relative">
+            <div class="mx-auto w-20 h-20 rounded-[1.4rem] bg-gradient-to-br from-indigo-500 via-violet-500 to-cyan-400 p-[2px] shadow-2xl shadow-indigo-900/60 animate-floaty">
+              <div class="w-full h-full rounded-[1.3rem] bg-base flex items-center justify-center">
+                <svg class="w-10 h-10 text-indigo-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/></svg>
+              </div>
+            </div>
+
+            <h2 class="font-display mt-7 text-3xl sm:text-4xl font-bold text-white tracking-tight">
+              Download <span class="text-gradient">TuitionHub</span>
+            </h2>
+            <p class="mt-4 text-slate-400 leading-relaxed max-w-md mx-auto">
+              Get the latest APK and start managing your tuition smarter today. Free forever, no hidden charges.
+            </p>
+
+            <div class="mt-7 flex flex-wrap justify-center gap-2.5 text-xs font-semibold">
+              <span class="glass px-4 py-2 rounded-full text-slate-300">Version 1.0.0</span>
+              <span class="glass px-4 py-2 rounded-full text-slate-300">56 MB</span>
+              <span class="glass px-4 py-2 rounded-full text-slate-300">Android 6.0+</span>
+              <span class="glass px-4 py-2 rounded-full text-slate-300">Updated Oct 2026</span>
+            </div>
+
+            <a href="appapk/app-release.apk" download="TuitionHub-v1.0.0.apk"
+               class="btn-primary btn-shine group mt-9 inline-flex items-center gap-3 px-10 py-5 rounded-2xl font-bold text-white text-lg">
+              <svg class="w-6 h-6 group-hover:translate-y-0.5 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download APK
+            </a>
+
+            <div class="mt-7 flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-slate-500">
+              <span class="flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Virus-free &amp; signed</span>
+              <span class="flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Regular free updates</span>
+              <span class="flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Android only · iOS coming soon</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="relative border-t border-white/5 pt-16 pb-8">
+    <div class="max-w-7xl mx-auto px-5 sm:px-8">
+      <div class="grid md:grid-cols-3 gap-10">
+        <div>
+          <a href="#top" class="flex items-center gap-3">
+            <span class="w-9 h-9 rounded-lg bg-gradient-to-br from-indigo-500 via-violet-500 to-cyan-400 p-[1px]">
+              <span class="w-full h-full rounded-[9px] bg-base flex items-center justify-center">
+                <svg class="w-4.5 h-4.5 w-5 h-5 text-indigo-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/></svg>
+              </span>
+            </span>
+            <span class="font-display font-bold text-white text-lg tracking-tight">Tuition<span class="text-gradient">Hub</span></span>
+          </a>
+          <p class="mt-4 text-sm text-slate-500 leading-relaxed max-w-xs">
+            The smart tuition management companion for modern teachers. Teach more, paperwork less.
+          </p>
+          <div class="mt-5 flex gap-3">
+            <a href="#" aria-label="Facebook" class="w-9 h-9 rounded-lg glass flex items-center justify-center text-slate-400 hover:text-white hover:bg-indigo-500/20 transition-all">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+            </a>
+            <a href="#" aria-label="YouTube" class="w-9 h-9 rounded-lg glass flex items-center justify-center text-slate-400 hover:text-white hover:bg-indigo-500/20 transition-all">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-1.92 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.25z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/></svg>
+            </a>
+            <a href="mailto:hello@tuitionhub.app" aria-label="Email" class="w-9 h-9 rounded-lg glass flex items-center justify-center text-slate-400 hover:text-white hover:bg-indigo-500/20 transition-all">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="md:justify-self-center">
+          <h4 class="font-display text-sm font-semibold text-white tracking-wider">QUICK LINKS</h4>
+          <ul class="mt-4 space-y-2.5 text-sm text-slate-500">
+            <li><a href="#features" class="hover:text-indigo-300 transition-colors">Features</a></li>
+            <li><a href="#showcase" class="hover:text-indigo-300 transition-colors">App Preview</a></li>
+            <li><a href="#how" class="hover:text-indigo-300 transition-colors">How it Works</a></li>
+            <li><a href="#download" class="hover:text-indigo-300 transition-colors">Download APK</a></li>
+          </ul>
+        </div>
+
+        <div class="md:justify-self-end">
+          <h4 class="font-display text-sm font-semibold text-white tracking-wider">CONTACT</h4>
+          <ul class="mt-4 space-y-2.5 text-sm text-slate-500">
+            <li class="flex items-center gap-2.5">
+              <svg class="w-4 h-4 text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              hello@tuitionhub.app
+            </li>
+            <li class="flex items-center gap-2.5">
+              <svg class="w-4 h-4 text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              Dhaka, Bangladesh
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mt-14 pt-7 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600">
+        <p>© <span id="year">2026</span> TuitionHub. All rights reserved.</p>
+        <p>Designed &amp; Developed with <span class="text-violet-400">♥</span> by <span class="text-slate-400 font-semibold">Your Name</span></p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ================= SCRIPTS ================= -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+
+  <script>
+    /* ============ UI: navbar, progress, spotlight, menu, year ============ */
+    (function () {
+      const nav = document.getElementById('navbar');
+      const progress = document.getElementById('progress');
+      const spot = document.getElementById('spotlight');
+
+      function onScroll() {
+        nav.classList.toggle('nav-scrolled', window.scrollY > 30);
+        const h = document.documentElement.scrollHeight - window.innerHeight;
+        progress.style.width = (h > 0 ? (window.scrollY / h) * 100 : 0) + '%';
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+
+      window.addEventListener('pointermove', (e) => {
+        spot.style.setProperty('--x', e.clientX + 'px');
+        spot.style.setProperty('--y', e.clientY + 'px');
+      }, { passive: true });
+
+      const menu = document.getElementById('mobileMenu');
+      document.querySelectorAll('[data-menu-toggle]').forEach((b) =>
+        b.addEventListener('click', () => menu.classList.toggle('hidden')));
+      menu.querySelectorAll('a').forEach((a) =>
+        a.addEventListener('click', () => menu.classList.add('hidden')));
+
+      document.getElementById('year').textContent = new Date().getFullYear();
+    })();
+
+    /* ============ AOS ============ */
+    if (window.AOS) {
+      AOS.init({ once: true, duration: 800, offset: 70, easing: 'ease-out-cubic' });
+    }
+
+    /* ============ 3D tilt cards (desktop only) ============ */
+    (function () {
+      if (window.matchMedia('(hover: none)').matches) return;
+      document.querySelectorAll('[data-tilt]').forEach((card) => {
+        card.style.transition = 'transform .35s ease, box-shadow .45s ease';
+        card.addEventListener('mousemove', (e) => {
+          const r = card.getBoundingClientRect();
+          const px = (e.clientX - r.left) / r.width - 0.5;
+          const py = (e.clientY - r.top) / r.height - 0.5;
+          card.style.transform = 'perspective(900px) rotateX(' + (-py * 7).toFixed(2) + 'deg) rotateY(' + (px * 9).toFixed(2) + 'deg) translateY(-6px)';
+        });
+        card.addEventListener('mouseleave', () => { card.style.transform = ''; });
+      });
+    })();
+
+    /* ============ Animated counters ============ */
+    (function () {
+      function animate(el) {
+        const target = parseFloat(el.dataset.count);
+        const suffix = el.dataset.suffix || '';
+        const decimals = parseInt(el.dataset.decimals || '0', 10);
+        const dur = 1600, t0 = performance.now();
+        function step(now) {
+          const p = Math.min((now - t0) / dur, 1);
+          const eased = 1 - Math.pow(1 - p, 3);
+          const val = target * eased;
+          el.textContent = (decimals ? val.toFixed(decimals) : Math.round(val).toLocaleString()) + suffix;
+          if (p < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      }
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((en) => { if (en.isIntersecting) { animate(en.target); io.unobserve(en.target); } });
+      }, { threshold: 0.6 });
+      document.querySelectorAll('[data-count]').forEach((el) => io.observe(el));
+    })();
+
+    /* ============ Three.js hero scene ============ */
+    (function () {
+      const container = document.getElementById('hero-3d');
+      if (!container) return;
+      const fallback = () => container.classList.add('webgl-fallback');
+      if (!window.THREE) { fallback(); return; }
+
+      let renderer;
+      try {
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+      } catch (err) { fallback(); return; }
+
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.domElement.style.display = 'block';
+      container.appendChild(renderer.domElement);
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(42, container.clientWidth / container.clientHeight, 0.1, 100);
+
+      /* Lights */
+      scene.add(new THREE.AmbientLight(0xbfd0ff, 0.5));
+      const l1 = new THREE.PointLight(0x6366f1, 2.4, 60); l1.position.set(-7, 5, 7); scene.add(l1);
+      const l2 = new THREE.PointLight(0x22d3ee, 2.4, 60); l2.position.set(7, -4, 7); scene.add(l2);
+      const l3 = new THREE.PointLight(0x8b5cf6, 1.6, 60); l3.position.set(0, 7, -6); scene.add(l3);
+
+      const rig = new THREE.Group(); scene.add(rig);
+      const phoneGroup = new THREE.Group(); rig.add(phoneGroup);
+
+      /* ---------- canvas texture helpers ---------- */
+      function rr(g, x, y, w, h, r) {
+        g.beginPath();
+        g.moveTo(x + r, y);
+        g.arcTo(x + w, y, x + w, y + h, r);
+        g.arcTo(x + w, y + h, x, y + h, r);
+        g.arcTo(x, y + h, x, y, r);
+        g.arcTo(x, y, x + w, y, r);
+        g.closePath();
+      }
+
+      function makeScreenTexture() {
+        const c = document.createElement('canvas'); c.width = 512; c.height = 1024;
+        const g = c.getContext('2d');
+        const bg = g.createLinearGradient(0, 0, 0, 1024);
+        bg.addColorStop(0, '#0c1029'); bg.addColorStop(1, '#070917');
+        g.fillStyle = bg; g.fillRect(0, 0, 512, 1024);
+
+        let rg = g.createRadialGradient(430, 140, 10, 430, 140, 330);
+        rg.addColorStop(0, 'rgba(99,102,241,.35)'); rg.addColorStop(1, 'rgba(99,102,241,0)');
+        g.fillStyle = rg; g.fillRect(0, 0, 512, 700);
+        rg = g.createRadialGradient(70, 900, 10, 70, 900, 300);
+        rg.addColorStop(0, 'rgba(34,211,238,.20)'); rg.addColorStop(1, 'rgba(34,211,238,0)');
+        g.fillStyle = rg; g.fillRect(0, 480, 512, 544);
+
+        /* status bar */
+        g.textBaseline = 'middle'; g.textAlign = 'left';
+        g.fillStyle = '#9aa3b8'; g.font = '600 26px Arial';
+        g.fillText('9:41', 40, 46);
+        g.fillStyle = '#9aa3b8';
+        rr(g, 352, 46, 8, 10, 2); g.fill();
+        rr(g, 366, 40, 8, 16, 2); g.fill();
+        rr(g, 380, 34, 8, 22, 2); g.fill();
+        g.strokeStyle = '#9aa3b8'; g.lineWidth = 2.5;
+        rr(g, 428, 34, 44, 22, 6); g.stroke();
+        g.fillStyle = '#22d3ee'; rr(g, 432, 38, 27, 14, 3); g.fill();
+        g.fillStyle = '#9aa3b8'; rr(g, 476, 40, 5, 10, 2); g.fill();
+
+        /* header */
+        g.fillStyle = '#8b93ab'; g.font = '500 24px Arial'; g.fillText('Good Morning,', 40, 132);
+        g.fillStyle = '#ffffff'; g.font = '700 40px Arial'; g.fillText('Rahim Uddin', 40, 174);
+        const av = g.createLinearGradient(392, 110, 472, 190);
+        av.addColorStop(0, '#6366f1'); av.addColorStop(1, '#22d3ee');
+        g.fillStyle = av; g.beginPath(); g.arc(432, 152, 40, 0, 6.29); g.fill();
+        g.fillStyle = '#fff'; g.font = '700 30px Arial'; g.textAlign = 'center'; g.fillText('RU', 432, 154); g.textAlign = 'left';
+
+        /* total students card */
+        g.fillStyle = 'rgba(255,255,255,.05)'; rr(g, 40, 232, 432, 216, 28); g.fill();
+        g.strokeStyle = 'rgba(255,255,255,.10)'; g.lineWidth = 2; rr(g, 40, 232, 432, 216, 28); g.stroke();
+        g.fillStyle = '#8b93ab'; g.font = '600 21px Arial'; g.fillText('TOTAL STUDENTS', 70, 276);
+        g.fillStyle = '#ffffff'; g.font = '800 64px Arial'; g.fillText('128', 70, 340);
+        g.fillStyle = 'rgba(52,211,153,.15)'; rr(g, 214, 310, 116, 40, 20); g.fill();
+        g.fillStyle = '#34d399'; g.font = '700 22px Arial'; g.fillText('+12 new', 236, 331);
+        const bars = [34, 52, 44, 66, 58, 82, 72];
+        bars.forEach((bh, i) => {
+          g.fillStyle = i === 5 ? '#22d3ee' : 'rgba(129,140,248,.85)';
+          rr(g, 70 + i * 54, 416 - bh, 30, bh, 6); g.fill();
+        });
+
+        /* mini cards */
+        function mini(x, label, val, col, bgc) {
+          g.fillStyle = bgc; rr(g, x, 478, 200, 120, 24); g.fill();
+          g.strokeStyle = col + '38'; g.lineWidth = 2; rr(g, x, 478, 200, 120, 24); g.stroke();
+          g.fillStyle = '#8b93ab'; g.font = '600 20px Arial'; g.fillText(label, x + 28, 518);
+          g.fillStyle = '#ffffff'; g.font = '800 42px Arial'; g.fillText(val, x + 28, 566);
+        }
+        mini(40, 'ATTENDANCE', '94%', '#818cf8', 'rgba(99,102,241,.13)');
+        mini(272, 'INCOME (BDT)', '45k', '#22d3ee', 'rgba(34,211,238,.13)');
+
+        /* classes list */
+        g.fillStyle = '#ffffff'; g.font = '700 30px Arial'; g.fillText("Today's Classes", 40, 662);
+        g.fillStyle = '#818cf8'; g.font = '600 22px Arial'; g.fillText('See all', 396, 662);
+        const rows = [
+          ['Class 9 - Physics', '5:00 PM', '#818cf8', 'Done', '#34d399', 'rgba(52,211,153,.15)'],
+          ['Class 7 - Math', '6:30 PM', '#22d3ee', 'Soon', '#a78bfa', 'rgba(139,92,246,.16)'],
+          ['Class 10 - Chem', '8:00 PM', '#a78bfa', 'Soon', '#a78bfa', 'rgba(139,92,246,.16)']
+        ];
+        rows.forEach((r, i) => {
+          const y = 696 + i * 104;
+          g.fillStyle = 'rgba(255,255,255,.04)'; rr(g, 40, y, 432, 88, 22); g.fill();
+          g.fillStyle = r[2]; g.beginPath(); g.arc(78, y + 44, 12, 0, 6.29); g.fill();
+          g.fillStyle = '#e6e9f5'; g.font = '600 26px Arial'; g.fillText(r[0], 110, y + 36);
+          g.fillStyle = '#8b93ab'; g.font = '500 21px Arial'; g.fillText(r[1], 110, y + 66);
+          g.fillStyle = r[5]; rr(g, 392, y + 26, 58, 36, 18); g.fill();
+          g.fillStyle = r[4]; g.font = '600 19px Arial'; g.fillText(r[3], 402, y + 45);
+        });
+
+        /* bottom nav */
+        g.fillStyle = 'rgba(8,10,25,.96)'; rr(g, 30, 930, 452, 80, 30); g.fill();
+        g.strokeStyle = 'rgba(255,255,255,.08)'; g.lineWidth = 2; rr(g, 30, 930, 452, 80, 30); g.stroke();
+        g.fillStyle = 'rgba(99,102,241,.28)'; rr(g, 60, 944, 64, 52, 16); g.fill();
+        function navIcon(cx, cy, type, active) {
+          const col = active ? '#a5b4fc' : '#5f6a85';
+          g.fillStyle = col; g.strokeStyle = col; g.lineWidth = 3;
+          if (type === 0) { g.beginPath(); g.moveTo(cx - 16, cy); g.lineTo(cx, cy - 14); g.lineTo(cx + 16, cy); g.lineTo(cx + 16, cy + 15); g.lineTo(cx - 16, cy + 15); g.closePath(); g.fill(); }
+          if (type === 1) { g.beginPath(); g.arc(cx - 8, cy - 8, 7, 0, 6.29); g.fill(); g.beginPath(); g.ellipse(cx - 8, cy + 12, 10, 7, 0, 0, 6.29); g.fill(); g.beginPath(); g.arc(cx + 10, cy - 6, 5.5, 0, 6.29); g.fill(); g.beginPath(); g.ellipse(cx + 11, cy + 12, 7, 5, 0, 0, 6.29); g.fill(); }
+          if (type === 2) { rr(g, cx - 15, cy - 13, 30, 28, 6); g.stroke(); g.beginPath(); g.moveTo(cx - 15, cy - 4); g.lineTo(cx + 15, cy - 4); g.stroke(); g.beginPath(); g.moveTo(cx - 7, cy - 17); g.lineTo(cx - 7, cy - 10); g.moveTo(cx + 7, cy - 17); g.lineTo(cx + 7, cy - 10); g.stroke(); }
+          if (type === 3) { g.beginPath(); g.arc(cx, cy, 12, 0, 6.29); g.stroke(); g.beginPath(); g.arc(cx, cy, 4.5, 0, 6.29); g.fill(); }
+        }
+        navIcon(92, 970, 0, true); navIcon(204, 970, 1, false); navIcon(316, 970, 2, false); navIcon(428, 970, 3, false);
+
+        const tex = new THREE.CanvasTexture(c);
+        tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+        return tex;
+      }
+
+      function makeBackTexture() {
+        const c = document.createElement('canvas'); c.width = 512; c.height = 1024;
+        const g = c.getContext('2d');
+        g.fillStyle = '#0a0d1f'; g.fillRect(0, 0, 512, 1024);
+        const lg = g.createLinearGradient(0, 0, 512, 1024);
+        lg.addColorStop(0, 'rgba(99,102,241,.14)'); lg.addColorStop(0.5, 'rgba(0,0,0,0)'); lg.addColorStop(1, 'rgba(34,211,238,.10)');
+        g.fillStyle = lg; g.fillRect(0, 0, 512, 1024);
+        g.fillStyle = '#060812'; rr(g, 40, 60, 200, 200, 44); g.fill();
+        g.strokeStyle = 'rgba(255,255,255,.10)'; g.lineWidth = 3; rr(g, 40, 60, 200, 200, 44); g.stroke();
+        function lens(cx, cy) {
+          const lg2 = g.createRadialGradient(cx - 6, cy - 6, 2, cx, cy, 30);
+          lg2.addColorStop(0, '#3b4a8f'); lg2.addColorStop(1, '#05060f');
+          g.fillStyle = lg2; g.beginPath(); g.arc(cx, cy, 28, 0, 6.29); g.fill();
+          g.strokeStyle = 'rgba(148,163,255,.35)'; g.lineWidth = 2; g.stroke();
+          g.fillStyle = 'rgba(34,211,238,.5)'; g.beginPath(); g.arc(cx - 8, cy - 8, 5, 0, 6.29); g.fill();
+        }
+        lens(105, 127); lens(175, 193);
+        g.textAlign = 'center';
+        g.fillStyle = 'rgba(165,180,252,.55)'; g.font = '700 36px Arial'; g.fillText('TuitionHub', 256, 560);
+        g.fillStyle = 'rgba(103,232,249,.35)'; g.font = '500 22px Arial'; g.fillText('teach - sync - grow', 256, 602);
+        return new THREE.CanvasTexture(c);
+      }
+
+      function makeGlowTexture() {
+        const c = document.createElement('canvas'); c.width = 256; c.height = 256;
+        const g = c.getContext('2d');
+        const rg = g.createRadialGradient(128, 128, 4, 128, 128, 126);
+        rg.addColorStop(0, 'rgba(129,140,248,.9)'); rg.addColorStop(0.5, 'rgba(99,102,241,.28)'); rg.addColorStop(1, 'rgba(99,102,241,0)');
+        g.fillStyle = rg; g.fillRect(0, 0, 256, 256);
+        return new THREE.CanvasTexture(c);
+      }
+
+      /* ---------- phone ---------- */
+      const bodyMat = new THREE.MeshStandardMaterial({ color: 0x11142b, metalness: 0.85, roughness: 0.32 });
+      phoneGroup.add(new THREE.Mesh(new THREE.BoxGeometry(3.1, 6.35, 0.34), bodyMat));
+
+      const edges = new THREE.LineSegments(
+        new THREE.EdgesGeometry(new THREE.BoxGeometry(3.14, 6.39, 0.36)),
+        new THREE.LineBasicMaterial({ color: 0x22d3ee, transparent: true, opacity: 0.35 })
+      );
+      phoneGroup.add(edges);
+
+      const screen = new THREE.Mesh(
+        new THREE.PlaneGeometry(2.72, 5.75),
+        new THREE.MeshBasicMaterial({ map: makeScreenTexture() })
+      );
+      screen.position.z = 0.18; phoneGroup.add(screen);
+
+      const back = new THREE.Mesh(
+        new THREE.PlaneGeometry(2.72, 5.75),
+        new THREE.MeshStandardMaterial({ map: makeBackTexture(), metalness: 0.7, roughness: 0.45 })
+      );
+      back.position.z = -0.18; back.rotation.y = Math.PI; phoneGroup.add(back);
+
+      const notch = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.16, 0.02), new THREE.MeshStandardMaterial({ color: 0x05060f, roughness: 0.6 }));
+      notch.position.set(0, 2.86, 0.19); phoneGroup.add(notch);
+
+      /* glow disc under phone */
+      const disc = new THREE.Mesh(
+        new THREE.PlaneGeometry(7.5, 7.5),
+        new THREE.MeshBasicMaterial({ map: makeGlowTexture(), transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false })
+      );
+      disc.rotation.x = -Math.PI / 2; disc.position.y = -4.5; scene.add(disc);
+
+      /* ---------- orbit rings + satellites ---------- */
+      const orbits = [];
+      function makeOrbit(radius, color, tiltX, tiltY, speed) {
+        const grp = new THREE.Group(); grp.rotation.set(tiltX, tiltY, 0);
+        grp.add(new THREE.Mesh(
+          new THREE.TorusGeometry(radius, 0.012, 8, 180),
+          new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0.22 })
+        ));
+        const sat = new THREE.Mesh(new THREE.SphereGeometry(0.13, 20, 20), new THREE.MeshBasicMaterial({ color: color }));
+        grp.add(sat);
+        grp.userData = { radius: radius, speed: speed, angle: Math.random() * 6.28, sat: sat };
+        rig.add(grp); orbits.push(grp);
+      }
+      makeOrbit(4.35, 0x818cf8, Math.PI / 2.3, 0, 0.45);
+      makeOrbit(5.15, 0x22d3ee, Math.PI / 1.85, 0.5, -0.32);
+
+      /* ---------- floating shapes ---------- */
+      const shapes = [];
+      function addShape(geo, mat, pos, rs, scale) {
+        const m = new THREE.Mesh(geo, mat);
+        m.position.set(pos[0], pos[1], pos[2]);
+        m.scale.setScalar(scale || 1);
+        rig.add(m);
+        shapes.push({ m: m, baseY: pos[1], rs: rs, fo: Math.random() * 6.28 });
+      }
+      addShape(
+        new THREE.TorusKnotGeometry(0.5, 0.16, 140, 18),
+        new THREE.MeshBasicMaterial({ color: 0x6366f1, wireframe: true, transparent: true, opacity: 0.5 }),
+        [-3.7, 2.0, -1.2], { x: 0.2, y: 0.4, z: 0 }, 0.9
+      );
+      addShape(
+        new THREE.IcosahedronGeometry(0.55, 0),
+        new THREE.MeshBasicMaterial({ color: 0x22d3ee, wireframe: true, transparent: true, opacity: 0.55 }),
+        [3.8, 2.4, -1.6], { x: 0.3, y: 0.25, z: 0.15 }, 1
+      );
+      addShape(
+        new THREE.OctahedronGeometry(0.5, 0),
+        new THREE.MeshStandardMaterial({ color: 0x8b5cf6, metalness: 0.6, roughness: 0.3, emissive: 0x4c1d95, emissiveIntensity: 0.7 }),
+        [3.6, -2.2, -0.6], { x: 0.2, y: 0.35, z: 0.1 }, 1
+      );
+      addShape(
+        new THREE.TetrahedronGeometry(0.42, 0),
+        new THREE.MeshStandardMaterial({ color: 0x0891b2, metalness: 0.6, roughness: 0.35, emissive: 0x0e7490, emissiveIntensity: 0.55 }),
+        [-3.5, -2.4, -1.0], { x: 0.25, y: 0.3, z: 0.12 }, 1
+      );
+
+      /* ---------- particles ---------- */
+      const isMobile = window.matchMedia('(max-width: 768px)').matches;
+      const pCount = isMobile ? 260 : 560;
+      const pPos = new Float32Array(pCount * 3);
+      const pCol = new Float32Array(pCount * 3);
+      const cIndigo = new THREE.Color(0x818cf8), cCyan = new THREE.Color(0x67e8f9), cWhite = new THREE.Color(0xffffff);
+      for (let i = 0; i < pCount; i++) {
+        const r = 7 + Math.random() * 9;
+        const th = Math.random() * Math.PI * 2;
+        const ph = Math.acos(2 * Math.random() - 1);
+        pPos[i * 3] = r * Math.sin(ph) * Math.cos(th);
+        pPos[i * 3 + 1] = r * Math.sin(ph) * Math.sin(ph) * 0.7;
+        pPos[i * 3 + 2] = r * Math.cos(ph) * 0.6 - 2;
+        const pick = Math.random();
+        const col = pick < 0.45 ? cIndigo : (pick < 0.8 ? cCyan : cWhite);
+        pCol[i * 3] = col.r; pCol[i * 3 + 1] = col.g; pCol[i * 3 + 2] = col.b;
+      }
+      const pGeo = new THREE.BufferGeometry();
+      pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+      pGeo.setAttribute('color', new THREE.BufferAttribute(pCol, 3));
+      const points = new THREE.Points(pGeo, new THREE.PointsMaterial({
+        size: 0.06, vertexColors: true, transparent: true, opacity: 0.85,
+        blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true
+      }));
+      scene.add(points);
+
+      /* ---------- interaction & loop ---------- */
+      let tRotY = 0, tRotX = 0, cRotY = 0, cRotX = 0;
+      window.addEventListener('pointermove', (e) => {
+        tRotY = (e.clientX / window.innerWidth - 0.5) * 1.1;
+        tRotX = (e.clientY / window.innerHeight - 0.5) * 0.7;
+      }, { passive: true });
+
+      function resize() {
+        const w = container.clientWidth, h = container.clientHeight;
+        renderer.setSize(w, h);
+        camera.aspect = w / h;
+        camera.position.z = w / h < 0.95 ? 13.8 : 11;
+        camera.updateProjectionMatrix();
+      }
+      window.addEventListener('resize', resize);
+      resize();
+
+      const clock = new THREE.Clock();
+      /* first frame right away — rAF never fires while the tab is hidden/backgrounded */
+      renderer.render(scene, camera);
+
+      function tick() {
+        requestAnimationFrame(tick);
+        if (document.hidden) return;
+        const dt = Math.min(clock.getDelta(), 0.05);
+        const t = clock.elapsedTime;
+
+        cRotY += (tRotY - cRotY) * 0.045;
+        cRotX += (tRotX - cRotX) * 0.045;
+        rig.rotation.y = cRotY + Math.sin(t * 0.25) * 0.06;
+        rig.rotation.x = cRotX * 0.6 + Math.cos(t * 0.2) * 0.03;
+
+        phoneGroup.position.y = Math.sin(t * 0.8) * 0.28;
+        phoneGroup.rotation.z = Math.sin(t * 0.5) * 0.03;
+
+        shapes.forEach((s) => {
+          s.m.rotation.x = t * s.rs.x + s.fo;
+          s.m.rotation.y = t * s.rs.y;
+          s.m.rotation.z = t * s.rs.z;
+          s.m.position.y = s.baseY + Math.sin(t * 0.9 + s.fo) * 0.3;
+        });
+
+        orbits.forEach((o) => {
+          o.userData.angle += dt * o.userData.speed;
+          const a = o.userData.angle, R = o.userData.radius;
+          o.userData.sat.position.set(Math.cos(a) * R, Math.sin(a) * R, 0);
+        });
+
+        points.rotation.y = t * 0.02;
+        renderer.render(scene, camera);
+      }
+
+      if (reduced) { renderer.render(scene, camera); } else { tick(); }
+      window.__threeReady = true;
+    })();
+
+    /* ============ WebAssembly Sync-ID Forge (98-byte hand-compiled module) ============ */
+    (function () {
+      var WASM_BYTES = new Uint8Array([0,97,115,109,1,0,0,0,1,9,2,96,1,127,0,96,0,1,127,3,3,2,0,1,6,10,1,127,1,65,162,153,218,150,121,11,7,15,2,4,115,101,101,100,0,0,4,110,101,120,116,0,1,10,43,2,6,0,32,0,36,0,11,34,0,35,0,35,0,65,13,116,115,36,0,35,0,35,0,65,17,118,115,36,0,35,0,35,0,65,5,116,115,36,0,35,0,11]);
+      var status = document.getElementById('wasm-status');
+      var out = document.getElementById('wasm-out');
+      var btn = document.getElementById('wasm-btn');
+      if (!btn || typeof WebAssembly === 'undefined') {
+        if (status) { status.textContent = 'WASM · UNSUPPORTED'; status.classList.add('lang-err'); }
+        return;
+      }
+      WebAssembly.instantiate(WASM_BYTES).then(function (mod) {
+        var api = mod.instance.exports;
+        api.seed(Date.now() | 0);
+        function gen() {
+          out.innerHTML = '';
+          for (var i = 0; i < 3; i++) {
+            var s = document.createElement('span');
+            s.className = 'sync-chip';
+            s.textContent = 'SYNC-' + ((api.next() >>> 0).toString(16).padStart(8, '0').slice(0, 6)).toUpperCase();
+            out.appendChild(s);
+          }
+        }
+        btn.addEventListener('click', gen);
+        gen();
+        status.textContent = 'WASM ● LIVE · 98 BYTES';
+        status.classList.add('lang-on');
+      }).catch(function () {
+        status.textContent = 'WASM · ERROR';
+        status.classList.add('lang-err');
+      });
+
+      /* fallback timers: if a runtime's CDN never answers, say so instead of spinning forever */
+      setTimeout(function () {
+        var py = document.getElementById('py-status');
+        if (py && !py.classList.contains('lang-on') && !py.classList.contains('lang-err')) {
+          py.textContent = 'PYTHON · OFFLINE';
+          py.classList.add('lang-err');
+        }
+      }, 45000);
+      setTimeout(function () {
+        var lua = document.getElementById('lua-status');
+        var name = document.getElementById('lua-codename');
+        if (lua && !lua.classList.contains('lang-on')) {
+          lua.textContent = 'LUA · OFFLINE';
+          lua.classList.add('lang-err');
+          if (name && name.textContent === '···') name.textContent = 'offline';
+        }
+      }, 20000);
+    })();
+  </script>
+
+  <!-- Lua runtime (Fengari) -->
+  <script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.js"></script>
+  <script type="application/lua">
+    local js = require "js"
+    local t  = os.date("*t")
+    local n  = t.yday + t.year
+    local A  = {"Nebula","Quantum","Azure","Cyber","Solar","Lunar","Neon","Hyper","Turbo","Astro","Pixel","Nova"}
+    local B  = {"Fox","Falcon","Tiger","Phoenix","Otter","Lynx","Panda","Hawk","Wolf","Cobra","Dolphin","Panther"}
+    local name = A[(n % #A) + 1] .. " " .. B[((n * 7) % #B) + 1]
+    js.global.document:getElementById("lua-codename").textContent = name
+    local badge = js.global.document:getElementById("lua-status")
+    badge.textContent = "LUA ● LIVE"
+    badge.classList:add("lang-on")
+  </script>
+
+  <!-- Python runtime (PyScript + Pyodide) -->
+  <script type="module" src="https://pyscript.net/releases/2024.11.1/core.js"></script>
+  <script type="py">
+    from pyscript import document, when
+
+    GOAL = 100000
+
+    def num(eid, default):
+        try:
+            return float(document.getElementById(eid).value)
+        except Exception:
+            return default
+
+    def set(eid, text):
+        document.getElementById(eid).textContent = text
+
+    def compute(event=None):
+        students  = num("py-students", 40)
+        fee       = num("py-fee", 800)
+        batches   = num("py-batches", 4)
+        months    = num("py-months", 12)
+
+        monthly   = students * fee
+        total     = monthly * months
+        per_batch = monthly / max(batches, 1)
+        pct       = int(max(0, min(100, monthly * 100 / GOAL)))
+
+        set("py-v-students", str(int(students)))
+        set("py-v-fee", "৳" + format(int(fee), ","))
+        set("py-v-batches", str(int(batches)))
+        set("py-v-months", str(int(months)) + " mo")
+
+        set("py-monthly",  f"৳{monthly:,.0f}")
+        set("py-yearly",   f"৳{total:,.0f}")
+        set("py-perbatch", f"৳{per_batch:,.0f}")
+        document.getElementById("py-bar").style.width = str(pct) + "%"
+
+    @when("input", "#py-students")
+    def _on_students(event):
+        compute()
+
+    @when("input", "#py-fee")
+    def _on_fee(event):
+        compute()
+
+    @when("input", "#py-batches")
+    def _on_batches(event):
+        compute()
+
+    @when("input", "#py-months")
+    def _on_months(event):
+        compute()
+
+    compute()
+
+    badge = document.getElementById("py-status")
+    badge.textContent = "PYTHON ● LIVE"
+    badge.classList.add("lang-on")
+  </script>
+</body>
+</html>
